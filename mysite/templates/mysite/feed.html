@@ -1,3 +1,63 @@
-{% extends 'mysite/base.html' %} {% block content %}
-<h1>Hello Guapo</h1>
-{% endblock %}
+{% extends 'mysite/base.html' %} {% load static %} {% block content %}
+
+<div class="container">
+    <div class="jumbotron">
+        <h1>AZ's Fakestagram</h1>
+        <p>Same as Instagram</p>
+        <form action="{% url 'mysite:add' %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <button class="btn" type="submit">
+                <strong> ADD A Picture! </strong>
+            </button>
+        </form>
+
+    </div>
+    <div class="container">
+        <div class="row">
+            {% if pictures %} {% for picture in pictures %}
+            <div class="col-lg-3 col-md-6 col-sm-8 col-sm-offset-2 col-lg-offset-0 col-md-offset-0 img-div">
+
+                <img src="{% static picture.url %}">
+                <div class="panel panel-warning">
+                    <div class="panel-heading">{{ picture.description }}</div>
+                    <div class="panel-body">
+                        <form action="{% url 'mysite:delete' picture.id %}" method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <button class="delete" type="submit">
+                                <strong> Delete </strong>
+                            </button>
+                        </form>
+                        <form action="{% url 'mysite:filter' picture.id %}" method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <button class="btn" type="submit">
+                                <strong>Filter </strong>
+                            </button>
+                        </form>
+                        <a href="{% url 'mysite:blue' picture.id %}">
+                            <button> Blue line Custom Filter</button>
+                        </a>
+                        {% if picture.comments %}
+                        <h3>
+                            Comments:
+                        </h3>
+                        {% for c in picture.comments %}
+                        <p>
+                            <div class="comment">
+                                {{ c }}
+                            </div>
+                        </p>
+                        {% endfor %} {% endif %}
+                        <form action="{% url 'mysite:comment' picture.id %}" method="post" enctype="multipart/form-data">
+                            {% csrf_token %} {{ post_comment }}
+                            <button class="btn" type="submit">Comment</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %} {% else %}
+        <p>No pictures posted yet! Post one now!!</p>
+        {% endif %}
+    </div>
+</div>
+<script src="{% static 'mysite/style/javascript.js' %}"></script> {% endblock %}
